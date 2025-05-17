@@ -7,10 +7,7 @@ import time
 
 class TradingApp(EWrapper, EClient):
     def __init__(self):
-        EClient.__init__(self, self)
-
-    # def error(self, reqId, errorCode, errorString):
-    #     print("Error {} {} {}".format(reqId, errorCode, errorString))
+        super().__init__(self)
 
     def contractDetails(self, reqId, contractDetails):
         print()
@@ -30,24 +27,30 @@ class TradingApp(EWrapper, EClient):
         print(f"  Trading Class: {summary.tradingClass}")
         print()
 
-def websocket_con():
+def websocket_con(app):
     app.run()
 
 
-app = TradingApp()
-app.connect("127.0.0.1", 7497, clientId=1)
+def main():
+    app = TradingApp()
+    app.connect("127.0.0.1", 7497, clientId=1)
 
-# starting a separate daemon thread to execute the websocket connection
-con_thread = threading.Thread(target=websocket_con, daemon=True)
-con_thread.start()
-time.sleep(1)  # some latency added to ensure that the connection is established
+    # Start the socket connection in a thread
+    con_thread = threading.Thread(target=websocket_con, args=(app,), daemon=True)
+    con_thread.start()
+    time.sleep(1)
 
-# creating object of the Contract class - will be used as a parameter for other function calls
-contract = Contract()
-contract.symbol = "AAPL"
-contract.secType = "STK"
-contract.currency = "USD"
-contract.exchange = "SMART"
+    contract = Contract()
+    contract.symbol = "AAPL"
+    contract.secType = "STK"
+    contract.currency = "USD"
+    contract.exchange = "SMART"
 
-app.reqContractDetails(100, contract)  # EClient function to request contract details
-time.sleep(5)  # some latency added to ensure that the contract details request has been processed
+    app.reqContractDetails(100, contract)
+    time.sleep(5)
+
+    # Disconnect the app cleanly
+    app.disconnect()
+
+if __name__ == "__main__":
+    main()
