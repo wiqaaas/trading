@@ -30,7 +30,6 @@ class TradingApp(EWrapper, EClient):
 def websocket_con(app):
     app.run()
 
-
 def main():
     app = TradingApp()
     app.connect("127.0.0.1", 7497, clientId=1)

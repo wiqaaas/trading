@@ -7,7 +7,8 @@ import time
 
 class TradingApp(EWrapper, EClient):
     def __init__(self):
-        super().__init__(self)
+        EClient.__init__(self, self)
+        EWrapper.__init__(self)
 
     def contractDetails(self, reqId, contractDetails):
         print()
@@ -49,7 +50,7 @@ def main():
     app.reqContractDetails(100, contract)
     time.sleep(5)
 
-    app.disconnect()  # Optional but clean: disconnect after use
+    app.disconnect()
 
 
 if __name__ == "__main__":
