@@ -7,10 +7,7 @@ import time
 
 class TradingApp(EWrapper, EClient):
     def __init__(self):
-        EClient.__init__(self, self)
-
-    # def error(self, reqId, errorCode, errorString):
-    #     print("Error {} {} {}".format(reqId, errorCode, errorString))
+        super().__init__(self)
 
     def contractDetails(self, reqId, contractDetails):
         print()
@@ -30,7 +27,8 @@ class TradingApp(EWrapper, EClient):
         print(f"  Trading Class: {summary.tradingClass}")
         print()
 
-def websocket_con():
+
+def websocket_con(app):
     app.run()
 
 
@@ -38,7 +36,7 @@ def main():
     app = TradingApp()
     app.connect("127.0.0.1", 7497, clientId=1)
 
-    con_thread = threading.Thread(target=websocket_con, daemon=True)
+    con_thread = threading.Thread(target=websocket_con, args=(app,), daemon=True)
     con_thread.start()
     time.sleep(1)
 
@@ -50,6 +48,9 @@ def main():
 
     app.reqContractDetails(100, contract)
     time.sleep(5)
+
+    app.disconnect()  # Optional but clean: disconnect after use
+
 
 if __name__ == "__main__":
     main()
